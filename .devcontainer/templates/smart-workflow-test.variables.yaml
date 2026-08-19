@@ -5,6 +5,15 @@ Variables:
       OpenAI:
         #[password]
         APIKey:
+      LiteLLM:
+        DefaultProxy: local-proxy
+        Proxies:
+          local-proxy:
+            # 'litellm' is the compose service name - the engine runs in a sibling container.
+            BaseUrl: http://litellm:4000/v1
+            #[password]
+            APIKey: sk-local-master-key
+            Model: mock-echo
     Observability:
       Openinference:
         Enabled: true
