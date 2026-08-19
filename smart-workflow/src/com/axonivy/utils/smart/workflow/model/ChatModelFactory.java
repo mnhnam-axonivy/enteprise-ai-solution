@@ -1,0 +1,47 @@
+package com.axonivy.utils.smart.workflow.model;
+
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.axonivy.utils.smart.workflow.model.spi.ChatModelProvider;
+import com.axonivy.utils.smart.workflow.model.spi.ChatModelProvider.ModelOptions;
+import com.axonivy.utils.smart.workflow.spi.internal.SpiLoader;
+import com.axonivy.utils.smart.workflow.spi.internal.SpiProject;
+
+import ch.ivyteam.ivy.environment.Ivy;
+import dev.langchain4j.model.chat.ChatModel;
+
+public class ChatModelFactory {
+
+  private static final String FALLBACK_PROVIDER = "OpenAI";
+
+  public interface AiConf {
+    String DEFAULT_PROVIDER = "AI.DefaultProvider";
+  }
+
+  public static ChatModel createModel(ModelOptions modelOptions, String providerName) {
+    return getProviderOrDefault(providerName).setup(modelOptions);
+  }
+
+  public static ChatModelProvider getProviderOrDefault(String providerName) {
+    String resolvedProviderName = StringUtils.defaultIfBlank(providerName,
+        StringUtils.defaultIfBlank(Ivy.var().get(AiConf.DEFAULT_PROVIDER), FALLBACK_PROVIDER));
+
+    return ChatModelFactory.create(resolvedProviderName)
+        .orElseThrow(() -> new IllegalArgumentException("Unknown model provider " + resolvedProviderName));
+  }
+
+  public static Optional<ChatModelProvider> create(String provider) {
+    return providers().stream() // TODO: stick to naming in dev.langchain4j.model.ModelProvider ?
+        .filter(impl -> Objects.equals(impl.name(), provider))
+        .findFirst();
+  }
+
+  public static Set<ChatModelProvider> providers() {
+    var pmv = SpiProject.getSmartWorkflowPmv(); // TODO: caching?
+    return new SpiLoader(pmv).load(ChatModelProvider.class);
+  }
+}

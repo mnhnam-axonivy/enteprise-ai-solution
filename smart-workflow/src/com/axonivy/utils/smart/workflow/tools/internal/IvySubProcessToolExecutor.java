@@ -1,0 +1,62 @@
+package com.axonivy.utils.smart.workflow.tools.internal;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import com.axonivy.utils.smart.workflow.tools.provider.SmartWorkflowTool.ToolParameter;
+
+import ch.ivyteam.ivy.bpm.error.BpmError;
+import ch.ivyteam.ivy.process.call.StartParameter;
+import ch.ivyteam.ivy.process.call.SubProcessCallResult;
+import ch.ivyteam.ivy.process.call.SubProcessCallStartEvent;
+import ch.ivyteam.ivy.process.call.SubProcessCallStartParamCaller;
+import dev.langchain4j.agent.tool.ToolExecutionRequest;
+import dev.langchain4j.data.message.ToolExecutionResultMessage;
+import dev.langchain4j.internal.Json;
+
+public class IvySubProcessToolExecutor {
+
+  public static ToolExecutionResultMessage execute(ToolExecutionRequest execTool) {
+    String name = execTool.name();
+
+    Optional<SubProcessCallStartEvent> startable = IvyToolsProcesses
+        .toolStarts().stream()
+        .filter(start -> start.description().name().equals(name))
+        .findFirst();
+
+    if (startable.isEmpty()) {
+      // TODO: how does Agentic error handling look like?
+      return ToolExecutionResultMessage.from(execTool, "failed to execute tool; unknown ivy-process function");
+    }
+
+    List<ToolParameter> toolParams = startable.get().description().in().stream()
+        .map((StartParameter p) -> new ToolParameter(p.name(), p.description(), p.typeName()))
+        .toList();
+    var parameters = new JsonProcessParameters()
+        .readParams(toolParams, execTool.arguments());
+
+    SubProcessCallResult res = call(startable.get(), parameters);
+    return ToolExecutionResultMessage.from(execTool, Json.toJson(res.asMap()));
+  }
+
+  private static SubProcessCallResult call(SubProcessCallStartEvent callable, Map<String, Object> params) {
+    if (params.isEmpty()) {
+      return callable.call();
+    }
+    SubProcessCallStartParamCaller pCaller = null;
+    for (var entry : params.entrySet()) {
+      pCaller = callable.withParam(entry.getKey(), entry.getValue());
+    }
+    try {
+      return pCaller.call();
+    } catch(Exception ex) {
+      if (ex.getCause() instanceof BpmError error) {
+        error.setAttribute("tool.params", params);
+        throw error;
+      }
+      throw ex;
+    }
+  }
+
+}

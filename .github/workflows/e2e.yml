@@ -1,0 +1,39 @@
+name: E2E-Build
+
+on:
+  schedule:
+    - cron:  '0 1 * * 0' # 1 AM on Sunday
+  workflow_dispatch:
+    inputs:
+      providers:
+        description: 'Comma-separated provider names to run E2E for. Empty = all. E.g. "OpenAI,Ollama"'
+        required: false
+        default: ''
+      ivyVersion:
+        type: string
+        required: false
+        default: dev
+        description: ivy engine permalink (e.g. sprint, nightly, dev)
+
+permissions:
+  contents: read
+  checks: write
+
+jobs:
+  build:
+    uses: axonivy-market/github-workflows/.github/workflows/ci.yml@v6
+    with:
+      mvnArgs: -P e2e.test -Dproviders=${{ inputs.providers }}
+      javaVersion: 25
+      cspellExtraWords: .github/cspell-extra-words.txt
+      ivyVersion: ${{ inputs.ivyVersion || 'dev' }}
+    secrets:
+      mvnArgs: |
+        -DOPEN_AI_API_KEY=${{ secrets.OPEN_AI_API_KEY }} \
+        -DAZURE_OPEN_AI_API_KEY=${{ secrets.AZURE_OPEN_AI_API_KEY }} \
+        -DAZURE_OPEN_AI_MODEL=${{ secrets.AZURE_OPEN_AI_MODEL }} \
+        -DAZURE_OPEN_AI_DEPLOYMENT=${{ secrets.AZURE_OPEN_AI_DEPLOYMENT }} \
+        -DAZURE_OPEN_AI_ENDPOINT=${{ secrets.AZURE_OPEN_AI_ENDPOINT }} \
+        -DGEMINI_AI_API_KEY=${{ secrets.GEMINI_AI_API_KEY }} \
+        -DXAI_API_KEY=${{ secrets.XAI_API_KEY }} \
+        -DANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}

@@ -1,0 +1,24 @@
+# editors
+.vscode/
+.claude/
+
+# general
+Thumbs.db
+.DS_Store
+*~
+*.log
+
+# java
+*.class
+*.jar
+hs_err_pid*
+
+# maven
+target/
+
+# ivy
+lib/mvn-deps/
+logs/
+src_dataClasses/
+src_wsproc/
+smart-workflow-test/config/variables.yaml

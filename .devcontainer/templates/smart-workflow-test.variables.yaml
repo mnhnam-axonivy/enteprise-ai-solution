@@ -1,0 +1,13 @@
+# yaml-language-server: $schema=https://json-schema.axonivy.com/14.0-dev/config/variables.json
+Variables:
+  AI:
+    Providers:
+      OpenAI:
+        #[password]
+        APIKey:
+    Observability:
+      Openinference:
+        Enabled: true
+    RAG:
+      OpenSearch:
+        Url: http://opensearch:9200
