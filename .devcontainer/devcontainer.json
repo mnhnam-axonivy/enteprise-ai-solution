@@ -8,12 +8,14 @@
   "runServices": [
     "workspace",
     "phoenix",
-    "opensearch"
+    "opensearch",
+    "litellm"
   ],
   "forwardPorts": [
     8080,
     6006,
-    9200
+    9200,
+    4000
   ],
   "onCreateCommand": "bash .devcontainer/on-create.sh",
   "features": {

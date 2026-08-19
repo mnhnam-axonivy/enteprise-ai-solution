@@ -1,0 +1,17 @@
+# LiteLLM proxy config - minimal placeholder, extend with real model_list later.
+model_list:
+  - model_name: placeholder
+    litellm_params:
+      model: openai/gpt-4o-mini
+      api_key: os.environ/OPENAI_API_KEY
+  # Deterministic model that needs no upstream key - for smoke testing the connector.
+  - model_name: mock-echo
+    litellm_params:
+      model: openai/gpt-4o-mini
+      mock_response: "Hello from the LiteLLM mock model"
+
+litellm_settings:
+  drop_params: true
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
