@@ -42,6 +42,7 @@
     <profile>
       <id>demo.test</id>
       <modules>
+	    <module>models/smart-workflow-lite-llm</module>
         <module>demo/smart-workflow-supplier-demo-test</module>
       </modules>
     </profile>

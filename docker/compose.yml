@@ -1,13 +1,4 @@
 services:
-  workspace:
-    image: mcr.microsoft.com/devcontainers/base:trixie
-    command: sleep infinity
-    volumes:
-      - ..:/workspaces/smart-workflow:cached
-    depends_on:
-      opensearch:
-        condition: service_healthy
-
   phoenix:
     image: arizephoenix/phoenix:nightly
     ports:
@@ -44,12 +35,14 @@ services:
       retries: 12
 
   litellm:
-    image: ghcr.io/berriai/litellm:main-stable
+    image: ghcr.io/berriai/litellm:v1.83.14-stable
     command: ["--config", "/app/config.yaml", "--port", "4000"]
     volumes:
       - ./litellm-config.yaml:/app/config.yaml:ro
     environment:
       - LITELLM_MASTER_KEY=${LITELLM_MASTER_KEY:-sk-local-master-key}
+      - LITELLM_SALT_KEY=${LITELLM_SALT_KEY:?Set LITELLM_SALT_KEY in your .env - it encrypts DB-stored credentials and must never change once models are added}
+      - STORE_MODEL_IN_DB=True
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
       - DATABASE_URL=postgresql://litellm:litellm@litellm-db:5432/litellm
     depends_on:
@@ -58,7 +51,7 @@ services:
     ports:
       - "4000:4000"
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://localhost:4000/health/liveliness || exit 1"]
+      test: ["CMD-SHELL", "python3 -c \"import urllib.request; urllib.request.urlopen('http://localhost:4000/health/liveliness')\" || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 12

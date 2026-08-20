@@ -1,0 +1,39 @@
+# yaml-language-server: $schema=https://json-schema.axonivy.com/14.0-dev/config/variables.example.json
+Variables:
+  AI:
+    Providers:
+      LiteLLM:
+        # One proxy serves every virtual key below.
+        BaseUrl: http://localhost:4000
+        # There is no default model: every Agent names an alias from one of these lists
+        # in its 'Model' field. Each key carries its own secret - nothing is inherited.
+        VirtualKeys:
+          # The common case: one key, several models. The secret is configured once and
+          # rotated in one place, no matter how many Agents call through it.
+          supplier-demo:
+            #[password]
+            APIKey: ${decrypt:your-encrypted-supplier-key}
+            Models: ocr-agent,financial-rules-validator,business-rule-validator-openai
+          # Aliases are values, not variable keys, so dots, slashes and colons are fine
+          # and are sent to the proxy exactly as written.
+          chat-team:
+            #[password]
+            APIKey: ${decrypt:your-encrypted-chat-key}
+            Models: gpt-4.1-mini,openai/gpt-4o,llama3:8b
+          # Two keys MAY publish the same alias - here to bill two teams separately. The
+          # Agents must then disambiguate in their 'Model' field: 'team-a/gpt-4o' or
+          # 'team-b/gpt-4o'. A bare 'gpt-4o' is rejected rather than billed to a guess.
+          team-a:
+            #[password]
+            APIKey: ${decrypt:team-a-key}
+            Models: gpt-4o
+          team-b:
+            #[password]
+            APIKey: ${decrypt:team-b-key}
+            Models: gpt-4o
+          # A key that lives on a second proxy, reached with its own base URL.
+          partner-proxy:
+            BaseUrl: https://litellm.internal.example.com/v1
+            #[password]
+            APIKey: ${decrypt:another-encrypted-key}
+            Models: claude-sonnet

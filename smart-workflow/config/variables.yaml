@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=https://json-schema.axonivy.com/14.0-dev/config/variables.json
 Variables:
   AI:
-    # [enum: OpenAI, AzureOpenAI, Gemini, xAI, Anthropic, Ollama]
+    # [enum: OpenAI, AzureOpenAI, Gemini, xAI, Anthropic, Ollama, LiteLLM]
     DefaultProvider: ""
     # Guardrails designed to ensure that AI operate safely ethical, and legal
     Guardrails:
@@ -13,11 +13,13 @@ Variables:
         Classifier:
           # AI provider used by AiPromptInjectionInputGuardrail for YES/NO classification.
           # When blank, falls back to AI.DefaultProvider.
-          # [enum: OpenAI, AzureOpenAI, Gemini, xAI, Anthropic, Ollama]
+          # [enum: OpenAI, AzureOpenAI, Gemini, xAI, Anthropic, Ollama, LiteLLM]
           Provider: ""
           # Model used by AiPromptInjectionInputGuardrail for YES/NO classification.
           # Use a lightweight model to reduce cost (e.g. gpt-4.1-nano, gemini-2.0-flash-lite).
-          # When blank, falls back to the provider's default model.
+          # When blank, falls back to the provider's default model. LiteLLM has no default
+          # model: name one of its connections here, or the classifier cannot run and
+          # blocks every message as a precaution.
           Model: ""
           # Custom system prompt for the YES/NO classifier.
           # When blank, the built-in prompt is used (covers 8 attack categories and 5 safe categories).
