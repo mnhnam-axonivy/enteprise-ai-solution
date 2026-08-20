@@ -3,35 +3,5 @@ Variables:
   AI:
     Providers:
       LiteLLM:
-        # Base URL of the LiteLLM proxy, including the OpenAI-compatible '/v1' path.
-        # Shared by all virtual keys below; override per key only to reach a second
-        # proxy. When blank: http://localhost:4000/v1
         BaseUrl: ""
-        # One entry per LiteLLM virtual key, naming the models that key may call - the
-        # pairing the proxy needs, since a model is only callable by a key that holds it.
-        # Keying by virtual key means a shared key is configured, and rotated, once.
-        # The entry name IS the 'key_alias' from the LiteLLM UI. Because 'APIKey' is
-        # stored encrypted and unrecognisable, that name is the only thing that tells you
-        # which key an entry holds - so name entries after the real key.
-        # Naming rules (these become YAML variable keys):
-        # - lowercase letters, numbers and hyphens (kebab-case)
-        # - no dots, no spaces, must not start with a digit
-        # Per-key fields, none of them inherited from another entry:
-        #   APIKey - the virtual key itself. Omit it only for a proxy started without a
-        #            master key, which accepts unauthenticated requests. Use a long,
-        #            high-entropy key: the value also becomes a literal blocklist entry
-        #            in SensitiveDataOutputGuardrail, so a dictionary word here would
-        #            block every AI response containing it.
-        #   Models - comma-separated model aliases this key is allowed to call. Required:
-        #            a key that lists none cannot be selected by any Agent. Aliases are
-        #            written verbatim, so 'gpt-4.1-mini', 'openai/gpt-4o' and 'llama3:8b'
-        #            all work - unlike variable keys, a value may contain '.', '/' or ':'.
-        #  BaseUrl - overrides the provider-level BaseUrl (a key on a second proxy)
-        # An Agent selects a model by putting its alias in the 'Model' field; there is no
-        # default, so the field is mandatory. A model should be listed by exactly one key.
-        # If two keys do publish the same alias - to bill two teams separately, say - the
-        # Agent must say which one it means as 'keyAlias/model', e.g. 'team-a/gpt-4o'.
-        # A key's organization, team, budget, rate limits and model scoping are all
-        # resolved by the proxy when the key is presented - they are never configured
-        # here. Ivy only ever holds the key value and the aliases it routes.
         VirtualKeys: ""

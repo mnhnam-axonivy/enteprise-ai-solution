@@ -50,7 +50,6 @@ public final class VariableUtils {
       switch (parts[FIELD_SEGMENT]) {
         case LiteLlmConf.API_KEY_FIELD -> key.setApiKey(variable.value());
         case LiteLlmConf.MODELS_FIELD -> key.setModels(variable.value());
-        case LiteLlmConf.BASE_URL_FIELD -> key.setBaseUrl(variable.value());
         default -> Ivy.log().warn("Unknown LiteLLM virtual key field in variable '" + variable.name() + "'.");
       }
     }

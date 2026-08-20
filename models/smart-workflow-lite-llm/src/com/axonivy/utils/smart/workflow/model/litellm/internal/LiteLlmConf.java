@@ -5,7 +5,6 @@ public interface LiteLlmConf {
   String BASE_URL = PREFIX + "BaseUrl";
   String VIRTUAL_KEYS = PREFIX + "VirtualKeys";
 
-  String BASE_URL_FIELD = "BaseUrl";
   String API_KEY_FIELD = "APIKey";
   String MODELS_FIELD = "Models";
 

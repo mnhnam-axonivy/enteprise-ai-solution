@@ -32,21 +32,11 @@ public class LiteLlmModelProvider implements ChatModelProvider {
     return builder.build();
   }
 
-  /**
-   * Every model alias the configured virtual keys publish - the calling Agent selects one
-   * through its 'Model' field. Deliberately not the proxy's full model list: that is owned
-   * by the proxy and cannot be known offline, since a virtual key may be granted an access
-   * group or a wildcard whose membership changes server-side.
-   */
   @Override
   public List<String> models() {
     return VariableUtils.modelNames();
   }
 
-  /**
-   * Every virtual key's own 'APIKey' variable. Derived from the actual variable names so
-   * that keys which declared none are not reported.
-   */
   @Override
   public List<String> secretsVars() {
     return VariableUtils.virtualKeysVars().stream()
