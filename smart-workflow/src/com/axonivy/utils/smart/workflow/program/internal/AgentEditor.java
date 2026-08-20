@@ -59,7 +59,9 @@ public class AgentEditor {
           .create())
         .add(ui.scriptField(Conf.MODEL)
           .label("Model:")
-          .help("Keep empty to use default from variables.yaml")
+          .help("Keep empty to use the provider's default from variables.yaml."
+              + " LiteLLM has no default: name one of the model aliases its virtual keys publish,"
+              + " qualified as 'virtualKey/model' when two keys publish the same alias.")
           .requireType(String.class)
           .create())
         .create();

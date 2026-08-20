@@ -1,0 +1,12 @@
+# LiteLLM proxy config - minimal placeholder, extend with real model_list later.
+model_list:
+
+litellm_settings:
+  drop_params: true
+
+general_settings:
+  # Read from the environment so docker/.env is honoured. A hardcoded value here would
+  # silently override LITELLM_MASTER_KEY. Keep it long and high-entropy: Ivy also uses
+  # the configured key as a literal blocklist entry in SensitiveDataOutputGuardrail, so
+  # a dictionary word would block every AI response containing it.
+  master_key: os.environ/LITELLM_MASTER_KEY
